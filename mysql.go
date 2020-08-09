@@ -14,7 +14,7 @@ func (m *Middleware) mysqlInsert(ud, scts, oa, da string) error {
 	}
 	defer db.Close()
 
-	stmtIns, err := db.Prepare("INSERT INTO inbox (ReceivingDateTime, Text, SenderNumber, RecipientID, UDH, TextDecoded) VALUES( ?, ?, ?, ?, 'UDH', 'TextDecoded' )")
+	stmtIns, err := db.Prepare("INSERT INTO inbox (ReceivingDateTime, Text, SenderNumber, RecipientID, UDH, TextDecoded) VALUES( ?, ?, ?, ?, '', '' )")
 	if err != nil {
 		return err
 	}
