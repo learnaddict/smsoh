@@ -1,0 +1,11 @@
+{
+    order smsoh last
+}
+
+localhost {
+	smsoh / {
+		username smsd
+		password makemesecure
+		database smsd
+	}	
+}
