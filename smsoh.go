@@ -19,9 +19,7 @@ func init() {
 // Middleware implements an HTTP handler that writes the
 // visitor's IP address to a file or stream.
 type Middleware struct {
-	Username string `json:"username,omitempty"`
-	Password string `json:"password,omitempty"`
-	Database string `json:"database,omitempty"`
+	MySQL MySQL
 }
 
 // CaddyModule returns the Caddy module information.
@@ -54,7 +52,7 @@ func (m Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddy
 	da := r.FormValue("da")
 
 	if ud != "" && scts != "" && oa != "" && da != "" {
-		err := m.mysqlInsert(ud, scts, oa, da)
+		err := m.MySQL.InsertInbox(ud, scts, oa, da)
 		if err != nil {
 			return err
 		}
@@ -73,53 +71,6 @@ func (m Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddy
 	  </form></body></html>`)
 	}
 	return nil
-}
-
-// UnmarshalCaddyfile implements caddyfile.Unmarshaler.
-func (m *Middleware) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
-	for d.Next() {
-		if d.NextArg() {
-			return d.ArgErr()
-		}
-		for d.NextBlock(0) {
-			switch d.Val() {
-			case "username":
-				if m.Username != "" {
-					return d.Err("username path already specified")
-				}
-				if !d.NextArg() {
-					return d.ArgErr()
-				}
-				m.Username = d.Val()
-			case "password":
-				if m.Password != "" {
-					return d.Err("password path already specified")
-				}
-				if !d.NextArg() {
-					return d.ArgErr()
-				}
-				m.Password = d.Val()
-			case "database":
-				if m.Database != "" {
-					return d.Err("database path already specified")
-				}
-				if !d.NextArg() {
-					return d.ArgErr()
-				}
-				m.Database = d.Val()
-			default:
-				return d.Errf("unrecognized subdirective: %s", d.Val())
-			}
-		}
-	}
-	return nil
-}
-
-// parseCaddyfile unmarshals tokens from h into a new Middleware.
-func parseCaddyfile(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler, error) {
-	var m Middleware
-	err := m.UnmarshalCaddyfile(h.Dispenser)
-	return m, err
 }
 
 func writeSMS(text string) error {

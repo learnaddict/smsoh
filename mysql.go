@@ -7,8 +7,14 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func (m *Middleware) mysqlInsert(ud, scts, oa, da string) error {
-	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s", m.Username, m.Password, m.Database))
+type MySQL struct {
+	Username string `json:"username,omitempty"`
+	Password string `json:"password,omitempty"`
+	Database string `json:"database,omitempty"`
+}
+
+func (my *MySQL) InsertInbox(ud, scts, oa, da string) error {
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s", my.Username, my.Password, my.Database))
 	if err != nil {
 		return err
 	}
