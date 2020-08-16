@@ -52,3 +52,8 @@ func (m *Middleware) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 	}
 	return nil
 }
+
+// Interface guards
+var (
+	_ caddyfile.Unmarshaler = (*Middleware)(nil)
+)
